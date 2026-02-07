@@ -43,7 +43,6 @@ local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned
 local SendChatMessage = SendChatMessage
 local SendAddonMessage = C_ChatInfo.SendAddonMessage
-local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
 local RegisterAddonMessagePrefix = C_ChatInfo.RegisterAddonMessagePrefix
 local Contains = tContains
 
@@ -87,15 +86,9 @@ RE.PinTextures = {}
 RE.DefaultTimer = 60
 RE.CareAboutNodes = false
 RE.CareAboutPoints = false
-RE.CareAboutGates = false
 RE.CareAboutFlags = false
 RE.CareAboutVehicles = false
 RE.PlayedFromStart = true
-RE.IoCAllianceGateName = ""
-RE.IoCHordeGateName = ""
-RE.IoCGateHealth = 2400000
-RE.IoCGateEstimator = {}
-RE.IoCGateEstimatorText = ""
 RE.SMEstimatorText = ""
 RE.SMEstimatorReport = ""
 RE.EstimatorTicks = {10000, 10000}
@@ -557,52 +550,6 @@ function RE:OnEvent(self, event, ...)
 				RE.FoundNewVersion = true
 			end
 		end
-	elseif event == "COMBAT_LOG_EVENT_UNFILTERED" and next(RE.POINodes) ~= nil then
-		local _, e, _, _, _, _, _, guid, _, _, _, _, _, _, damage = CombatLogGetCurrentEventInfo()
-		if e ~= "SPELL_BUILDING_DAMAGE" then return end
-
-        ---@diagnostic disable-next-line: need-check-nil
-		local gateID = guid:match("%-(%d-)%-%x-$")
-		if gateID == "195496" then -- Horde East
-			RE.POINodes[RE.IoCHordeGateName.." - "..L["East"]].health = RE.POINodes[RE.IoCHordeGateName.." - "..L["East"]].health - damage
-			if RE.POINodes[RE.IoCHordeGateName.." - "..L["East"]].health < RE.IoCGateEstimator[FACTION_HORDE] then
-				RE.IoCGateEstimator[FACTION_HORDE] = RE.POINodes[RE.IoCHordeGateName.." - "..L["East"]].health
-			end
-		elseif gateID == "195494" then -- Horde Central
-			RE.POINodes[RE.IoCHordeGateName.." - "..L["Front"]].health = RE.POINodes[RE.IoCHordeGateName.." - "..L["Front"]].health - damage
-			if RE.POINodes[RE.IoCHordeGateName.." - "..L["Front"]].health < RE.IoCGateEstimator[FACTION_HORDE] then
-				RE.IoCGateEstimator[FACTION_HORDE] = RE.POINodes[RE.IoCHordeGateName.." - "..L["Front"]].health
-			end
-		elseif gateID == "195495" then -- Horde West
-			RE.POINodes[RE.IoCHordeGateName.." - "..L["West"]].health = RE.POINodes[RE.IoCHordeGateName.." - "..L["West"]].health - damage
-			if RE.POINodes[RE.IoCHordeGateName.." - "..L["West"]].health < RE.IoCGateEstimator[FACTION_HORDE] then
-				RE.IoCGateEstimator[FACTION_HORDE] = RE.POINodes[RE.IoCHordeGateName.." - "..L["West"]].health
-			end
-		elseif gateID == "195700" then -- Alliance East
-			RE.POINodes[RE.IoCAllianceGateName.." - "..L["East"]].health = RE.POINodes[RE.IoCAllianceGateName.." - "..L["East"]].health - damage
-			if RE.POINodes[RE.IoCAllianceGateName.." - "..L["East"]].health < RE.IoCGateEstimator[FACTION_ALLIANCE] then
-				RE.IoCGateEstimator[FACTION_ALLIANCE] = RE.POINodes[RE.IoCAllianceGateName.." - "..L["East"]].health
-			end
-		elseif gateID == "195698" then -- Alliance Center
-			RE.POINodes[RE.IoCAllianceGateName.." - "..L["Front"]].health = RE.POINodes[RE.IoCAllianceGateName.." - "..L["Front"]].health - damage
-			if RE.POINodes[RE.IoCAllianceGateName.." - "..L["Front"]].health < RE.IoCGateEstimator[FACTION_ALLIANCE] then
-				RE.IoCGateEstimator[FACTION_ALLIANCE] = RE.POINodes[RE.IoCAllianceGateName.." - "..L["Front"]].health
-			end
-		elseif gateID == "195699" then -- Alliance West
-			RE.POINodes[RE.IoCAllianceGateName.." - "..L["West"]].health = RE.POINodes[RE.IoCAllianceGateName.." - "..L["West"]].health - damage
-			if RE.POINodes[RE.IoCAllianceGateName.." - "..L["West"]].health < RE.IoCGateEstimator[FACTION_ALLIANCE] then
-				RE.IoCGateEstimator[FACTION_ALLIANCE] = RE.POINodes[RE.IoCAllianceGateName.." - "..L["West"]].health
-			end
-		end
-
-		if RE.IoCGateEstimator[FACTION_HORDE] < RE.IoCGateEstimator[FACTION_ALLIANCE] then
-			RE.IoCGateEstimatorText = "|cFF00A9FF"..RE:Round((RE.IoCGateEstimator[FACTION_HORDE] / RE.IoCGateHealth) * 100, 0).."%|r"
-		elseif RE.IoCGateEstimator[FACTION_HORDE] > RE.IoCGateEstimator[FACTION_ALLIANCE] then
-			RE.IoCGateEstimatorText = "|cFFFF141D"..RE:Round((RE.IoCGateEstimator[FACTION_ALLIANCE] / RE.IoCGateHealth) * 100, 0).."%|r"
-		else
-			RE.IoCGateEstimatorText = ""
-		end
-		REPorterFrameEstimatorText:SetText(RE.IoCGateEstimatorText)
 	elseif event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" then
 		local instance = select(2, IsInInstance())
 		if RE.CurrentMap ~= -1 then
@@ -754,7 +701,6 @@ function RE:OnPOIUpdate()
 			if RE.CurrentMap == IOC then
 				RE.POIInfo.gate = false
 				if RE:CheckCoordinates(x, y, 421, -401) then
-					RE.IoCAllianceGateName = RE.POIInfo.name
 					RE.POIInfo.name = RE.POIInfo.name.." - "..L["East"]
 					RE.POIInfo.translatedName = "Alliance Gate - East"
 					RE.POIInfo.gate = true
@@ -770,7 +716,6 @@ function RE:OnPOIUpdate()
 					RE.POIInfo.gate = true
 					y = y + 15
 				elseif RE:CheckCoordinates(x, y, 380, -165) then
-					RE.IoCHordeGateName = RE.POIInfo.name
 					RE.POIInfo.name = RE.POIInfo.name.." - "..L["Front"]
 					RE.POIInfo.translatedName = "Horde Gate - Front"
 					RE.POIInfo.gate = true
@@ -834,8 +779,6 @@ function RE:OnPOIUpdate()
 			if RE.POINodes[RE.POIInfo.name] == nil then
 				RE.POINodes[RE.POIInfo.name] = {["id"] = i, ["poiID"] = RE.POIInfo.areaPoiID, ["name"] = RE.POIInfo.name, ["status"] = RE.POIInfo.description, ["x"] = x, ["y"] = y, ["texture"] = RE.POIInfo.textureIndex, ["active"] = true}
 				if RE.CurrentMap == IOC and RE.POIInfo.gate then
-					RE.POINodes[RE.POIInfo.name].health = RE.IoCGateHealth
-					RE.POINodes[RE.POIInfo.name].maxHealth = RE.IoCGateHealth
 					RE.POINodes[RE.POIInfo.name].translatedName = RE.POIInfo.translatedName
 				elseif RE.CurrentMap == SS and RE.PlayedFromStart then
 					RE:NodeChange(RE.POIInfo.textureIndex, RE.POIInfo.name)
@@ -1004,21 +947,9 @@ function RE:OnUpdate(elapsed)
 				    end
 				    _G[battlefieldPOIName.."TextureBG"]:SetWidth(RE.POIIconSize)
 				    _G[battlefieldPOIName.."TextureBGofBG"]:Hide()
-				    if RE.CareAboutGates and v.health and v.health > 0 then
-				      _G[battlefieldPOIName.."TextureBGTop1"]:Hide()
-				      _G[battlefieldPOIName.."TextureBGTop2"]:Show()
-				      _G[battlefieldPOIName.."TextureBGTop2"]:SetWidth((v.health/v.maxHealth) * RE.POIIconSize)
-				      if RE.PlayedFromStart then
-								_G[battlefieldPOIName.."TimerCaption"]:SetText(RE:Round((v.health/v.maxHealth)*100, 0).."%")
-				      else
-				        _G[battlefieldPOIName.."TimerCaption"]:SetText("|cFFFF141D"..RE:Round((v.health/v.maxHealth)*100, 0).."%|r")
-				      end
-				      _G[battlefieldPOIName.."Timer"]:Show()
-				    else
-				      _G[battlefieldPOIName.."TextureBGTop1"]:Hide()
-				      _G[battlefieldPOIName.."TextureBGTop2"]:Hide()
-				      _G[battlefieldPOIName.."Timer"]:Hide()
-				    end
+					_G[battlefieldPOIName.."TextureBGTop1"]:Hide()
+					_G[battlefieldPOIName.."TextureBGTop2"]:Hide()
+					_G[battlefieldPOIName.."Timer"]:Hide()
 				  else
 				    local timeLeft = TIMER:TimeLeft(v.timer)
 				    _G[battlefieldPOIName.."TextureBG"]:SetWidth(RE.POIIconSize - ((timeLeft / RE.DefaultTimer) * RE.POIIconSize))
@@ -1096,13 +1027,6 @@ function RE:UnitOnEnterPOI(self)
 		if RE.POINodes[battlefieldPOI.name].status and RE.POINodes[battlefieldPOI.name].status ~= "" then
 			status = "\n"..RE.POINodes[battlefieldPOI.name].status
 		end
-		if RE.POINodes[battlefieldPOI.name].health then
-			if RE.PlayedFromStart then
-				status = "\n["..RE:Round((RE.POINodes[battlefieldPOI.name].health/RE.POINodes[battlefieldPOI.name].maxHealth)*100, 0).."%]"
-			else
-				status = "\n[|r|cFFFF141D"..RE:Round((RE.POINodes[battlefieldPOI.name].health/RE.POINodes[battlefieldPOI.name].maxHealth)*100, 0).."%|r|cFFFFFFFF]"
-			end
-		end
 		if TIMER:TimeLeft(RE.POINodes[battlefieldPOI.name].timer) == 0 then
 			tooltipText = tooltipText..battlefieldPOI.name.."|cFFFFFFFF"..status.."|r"
 		else
@@ -1147,10 +1071,8 @@ function RE:Shutdown()
 	RE.IsRated = false
 	RE.CareAboutNodes = false
 	RE.CareAboutPoints = false
-	RE.CareAboutGates = false
 	RE.CareAboutFlags = false
 	RE.CareAboutVehicles = false
-	REPorterFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	REPorterFrame:UnregisterEvent("VIGNETTES_UPDATED")
 	REPorterFrame:UnregisterEvent("AREA_POIS_UPDATED")
 	REPorterFrame:UnregisterEvent("UPDATE_UI_WIDGET")
@@ -1184,12 +1106,7 @@ function RE:Create()
 	REPorterFrameEstimator:SetPoint("TOP", UIWidgetTopCenterContainerFrame, "BOTTOM", 0, -10)
 	RE.POINodes = {}
 
-	if RE.CurrentMap == IOC then
-		RE.IoCGateEstimator = {}
-		RE.IoCGateEstimator[FACTION_ALLIANCE] = RE.IoCGateHealth
-		RE.IoCGateEstimator[FACTION_HORDE] = RE.IoCGateHealth
-		RE.IoCGateEstimatorText = ""
-	elseif RE.CurrentMap == SM or RE.CurrentMap == DR then
+	if RE.CurrentMap == SM or RE.CurrentMap == DR then
 		RE.SMEstimatorText = ""
 		RE.SMEstimatorReport = ""
 	else
@@ -1212,12 +1129,6 @@ function RE:Create()
 		REPorterFrame:RegisterEvent("UPDATE_UI_WIDGET")
 	else
 		RE.CareAboutPoints = false
-	end
-	if RE.CurrentMap == IOC then
-		RE.CareAboutGates = true
-		REPorterFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	else
-		RE.CareAboutGates = false
 	end
 	if Contains({WG, TP, EOTS, TOK, CI, DR}, RE.CurrentMap) then
 		RE.CareAboutFlags = true
