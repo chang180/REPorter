@@ -1,6 +1,5 @@
 local _, RE = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("REPorter")
-local LBS = LibStub("LibBabble-SubZone-3.0"):GetReverseLookupTable()
 local TIMER = LibStub("AceTimer-3.0")
 REPorter = RE
 
@@ -103,7 +102,7 @@ RE.BlinkPOIValue = 0.3
 RE.BlinkPOIUp = true
 
 RE.FoundNewVersion = false
-RE.AddonVersionCheck = 21011
+RE.AddonVersionCheck = 30000
 RE.ScreenHeight, RE.ScreenWidth = UIParent:GetCenter()
 
 RE.MapSettings = {
@@ -370,7 +369,6 @@ function RE:ShortTime(TimeRaw)
 	local TimeSec = floor(TimeRaw % 60)
 	local TimeMin = floor(TimeRaw / 60)
 	if TimeSec < 10 then
-        ---@diagnostic disable-next-line: cast-local-type
 		TimeSec = "0" .. TimeSec
 	end
 	return TimeMin .. ":" .. TimeSec
