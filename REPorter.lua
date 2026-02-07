@@ -38,10 +38,8 @@ local UnitIsUnit = UnitIsUnit
 local UnitAffectingCombat = UnitAffectingCombat
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned
-local SendChatMessage = SendChatMessage
 local SendAddonMessage = C_ChatInfo.SendAddonMessage
 local RegisterAddonMessagePrefix = C_ChatInfo.RegisterAddonMessagePrefix
-local Contains = tContains
 
 local AV = 91
 local WG = 1339
@@ -504,7 +502,7 @@ function RE:OnMouseWheel(delta)
 	newscale = RE:Round(newscale, 2)
 	REPorterFrameCore:SetScale(newscale)
 	if SettingsPanel:IsShown() then
-		RE.ConfigFrame.obj.children[1].children[1].children[9]:SetValue(newscale)
+		RE.ConfigFrame.obj.children[1].children[1].children[7]:SetValue(newscale)
 	end
 end
 
@@ -519,7 +517,7 @@ function RE:OnEvent(self, event, ...)
 
 		LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("REPorter", RE.AceConfig)
 		RE.ConfigFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("REPorter", "REPorter")
-		SettingsPanel:HookScript("OnHide", function() RE:HideDummyMap(true) end)
+		hooksecurefunc(SettingsPanel, "Close", function(self) RE:HideDummyMap(true) end)
 		RE:UpdateConfig()
 
 		RegisterAddonMessagePrefix("REPorter")
@@ -532,8 +530,6 @@ function RE:OnEvent(self, event, ...)
 		for i=1, RE.POINumber do
 			RE:CreatePOI(i)
 		end
-
-		RE.IsSkinned = AddOnSkins and AddOnSkins[1]:CheckOption("REPorter") or false
 
 		self:UnregisterEvent("ADDON_LOADED")
 	elseif event == "CHAT_MSG_ADDON" and ... == "REPorter" then
@@ -768,7 +764,7 @@ function RE:OnPOIUpdate()
 					colorOverride = {0, 1, 0}
 				end
 			elseif RE.CurrentMap == BFW then
-				if Contains(RE.BFWWalls, RE.POIInfo.textureIndex) then
+				if tContains(RE.BFWWalls, RE.POIInfo.textureIndex) then
 					RE.POIInfo.name = RE.POIInfo.name.." "..RE.POIInfo.areaPoiID
 				end
 			end
@@ -931,7 +927,7 @@ function RE:OnUpdate(elapsed)
 				    else
 				      if RE.CurrentMap == SS then
 				        _G[battlefieldPOIName.."TextureBG"]:SetColorTexture(0,1,0,0.3)
-							elseif RE.CurrentMap == CI or (RE.CurrentMap == BFW and Contains(RE.BFWWalls, v.texture)) then
+							elseif RE.CurrentMap == CI or (RE.CurrentMap == BFW and tContains(RE.BFWWalls, v.texture)) then
 								_G[battlefieldPOIName.."TextureBG"]:SetColorTexture(0,0,0,0)
 				      else
 				        _G[battlefieldPOIName.."TextureBG"]:SetColorTexture(0,0,0,0.3)
@@ -1009,7 +1005,7 @@ function RE:UnitOnEnterPOI(self)
 	local tooltipText = ""
 	local battlefieldPOI = _G[self:GetName()]
 
-	if RE.CurrentMap == CI or (RE.CurrentMap == BFW and Contains(RE.BFWWalls, RE.POINodes[battlefieldPOI.name].texture)) then
+	if RE.CurrentMap == CI or (RE.CurrentMap == BFW and tContains(RE.BFWWalls, RE.POINodes[battlefieldPOI.name].texture)) then
 		return
 	end
 
@@ -1046,7 +1042,6 @@ function RE:Startup()
 	if RE.Settings.profile.HideMinimap then
 		MinimapCluster:Hide()
 	end
-	SendAddonMessage("REPorter", "Version;"..RE.AddonVersionCheck, "INSTANCE_CHAT")
 	if IsInGuild() then
 		SendAddonMessage("REPorter", "Version;"..RE.AddonVersionCheck, "GUILD")
 	end
@@ -1105,7 +1100,7 @@ function RE:Create()
 		RE.EstimatorData = {0, 0, 0, 0, -1}
 	end
 
-	if Contains({AV, BFG, IOC, AB, DG, SS, EOTS, BFW, CI, ASH, TOK}, RE.CurrentMap) then
+	if tContains({AV, BFG, IOC, AB, DG, SS, EOTS, BFW, CI, ASH, TOK}, RE.CurrentMap) then
 		RE.CareAboutNodes = true
 		if RE.CurrentMap == SS then
 			REPorterFrame:RegisterEvent("VIGNETTES_UPDATED")
@@ -1115,25 +1110,24 @@ function RE:Create()
 	else
 		RE.CareAboutNodes = false
 	end
-	if Contains({BFG, EOTS, AB, DG, SM, DR}, RE.CurrentMap) then
+	if tContains({BFG, EOTS, AB, DG, SM, DR}, RE.CurrentMap) then
 		RE.CareAboutPoints = true
 		REPorterFrame:RegisterEvent("UPDATE_UI_WIDGET")
 	else
 		RE.CareAboutPoints = false
 	end
-	if Contains({WG, TP, EOTS, TOK, CI, DR}, RE.CurrentMap) then
+	if tContains({WG, TP, EOTS, TOK, CI, DR}, RE.CurrentMap) then
 		RE.CareAboutFlags = true
 	else
 		RE.CareAboutFlags = false
 	end
-	if Contains({IOC, SM, BFW, DR}, RE.CurrentMap) then
+	if tContains({IOC, SM, BFW, DR}, RE.CurrentMap) then
 		RE.CareAboutVehicles = true
 	else
 		RE.CareAboutVehicles = false
 	end
 
 	RE:LoadMapSettings()
-	RE:SetupReportBar()
 	TIMER:ScheduleTimer(RE.TimerJoinCheck, 5)
 	REPorterFrameCore:SetScript("OnUpdate", RE.OnUpdate)
 end
@@ -1230,7 +1224,6 @@ function RE:ShowDummyMap(mapID)
 
 	RE.CurrentMap = mapID
 	RE:LoadMapSettings()
-	RE:SetupReportBar()
 	REPorterFrame:Show()
 	REPorterFrame:SetFrameStrata("HIGH")
 end

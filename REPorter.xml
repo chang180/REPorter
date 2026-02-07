@@ -275,16 +275,13 @@
 
 	<Frame name="REPorterFrameEstimator" parent="UIWidgetTopCenterContainerFrame" hidden="true" frameStrata="BACKGROUND">
 		<Size>
-			<AbsDimension x="100" y="40"/>
+			<AbsDimension x="100" y="20"/>
 		</Size>
 		<Layers>
 			<Layer>
 				<FontString name="$ParentText" justifyH="CENTER" inherits="SystemFont_Shadow_Med3" setAllPoints="true"/>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnMouseUp>REPorter:ReportEstimator()</OnMouseUp>
-		</Scripts>
 	</Frame>
 
 </Ui>
