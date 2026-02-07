@@ -37,8 +37,6 @@ local UnitClass = UnitClass
 local UnitExists = UnitExists
 local UnitIsUnit = UnitIsUnit
 local UnitAffectingCombat = UnitAffectingCombat
-local UnitHealth = UnitHealth
-local UnitHealthMax = UnitHealthMax
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned
 local SendChatMessage = SendChatMessage
@@ -832,11 +830,7 @@ function RE:OnUpdate(elapsed)
 					texture = "Interface\\Addons\\REPorter\\Textures\\BlipNormal"
 					local r, g, b = GetClassColor(select(2, UnitClass(unit)))
 					if UnitAffectingCombat(unit) then
-						if (UnitHealth(unit) / UnitHealthMax(unit)) * 100 < 26 then
-							texture = "Interface\\Addons\\REPorter\\Textures\\BlipDying"
-						else
-							texture = "Interface\\Addons\\REPorter\\Textures\\BlipCombat"
-						end
+						texture = "Interface\\Addons\\REPorter\\Textures\\BlipCombat"
 					elseif UnitIsDeadOrGhost(unit) then
 						texture = "Interface\\Addons\\REPorter\\Textures\\BlipDead"
 						r, g, b = r * 0.35, g * 0.35, b * 0.35
@@ -998,9 +992,8 @@ function RE:UnitOnEnterPlayer(self, tooltipFrame)
 	for unit in pairs(self.currentMouseOverUnits) do
 		if not self:IsMouseOverUnitExcluded(unit) then
 			local unitName = UnitName(unit)
-			local unitHealth = (UnitHealth(unit) / UnitHealthMax(unit)) * 100
 			local _, _, _, unitColor = GetClassColor(select(2, UnitClass(unit)))
-			tooltipText = tooltipText..prefix.."|c"..unitColor..unitName.."|r |cFFFFFFFF["..RE:Round(unitHealth, 0).."%]|r"
+			tooltipText = tooltipText..prefix.."|c"..unitColor..unitName.."|r"
 			prefix = "\n"
 		end
 	end
