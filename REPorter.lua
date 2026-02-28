@@ -29,7 +29,6 @@ local GetBattlefieldFlagPosition = C_PvP.GetBattlefieldFlagPosition
 local GetNumBattlefieldVehicles = GetNumBattlefieldVehicles
 local GetBattlefieldVehicleInfo = C_PvP.GetBattlefieldVehicleInfo
 local GetClassColor = GetClassColor
-local GetRaidTargetIndex = GetRaidTargetIndex
 local GetDoubleStatusBarWidgetVisualizationInfo = C_UIWidgetManager.GetDoubleStatusBarWidgetVisualizationInfo
 local UnitName = UnitName
 local UnitClass = UnitClass
@@ -100,7 +99,7 @@ RE.BlinkPOIValue = 0.3
 RE.BlinkPOIUp = true
 
 RE.FoundNewVersion = false
-RE.AddonVersionCheck = 30001
+RE.AddonVersionCheck = 30100
 RE.ScreenHeight, RE.ScreenWidth = UIParent:GetCenter()
 
 RE.MapSettings = {
@@ -218,7 +217,6 @@ RE.DefaultConfig = {
 		Locked = false,
 		Opacity = 0.75,
 		HideMinimap = false,
-		DisplayMarks = false,
 		DisplayHealers = false,
 		Map = {
 			[AB] = {["wx"] = RE.ScreenHeight, ["wy"] = RE.ScreenWidth, ["ww"] = 325, ["wh"] = 325, ["mx"] = 16, ["my"] = -77, ["ms"] = 1},
@@ -270,21 +268,12 @@ RE.AceConfig = {
 					set = function(_, val) RE.Settings.profile.HideMinimap = val; RE:UpdateConfig() end,
 					get = function(_) return RE.Settings.profile.HideMinimap end
 				},
-				DisplayMarks = {
-					name = L["Always display raid markers"],
-					desc = L["When checked player pins will be always replaced with raid markers."],
-					type = "toggle",
-					width = "full",
-					order = 4,
-					set = function(_, val) RE.Settings.profile.DisplayMarks = val; RE:UpdateConfig() end,
-					get = function(_) return RE.Settings.profile.DisplayMarks end
-				},
 				DisplayHealers = {
 					name = L["Always highlight the healers"],
 					desc = L["When checked healers will always be highlighted."],
 					type = "toggle",
 					width = "full",
-					order = 5,
+					order = 4,
 					set = function(_, val) RE.Settings.profile.DisplayHealers = val; RE:UpdateConfig() end,
 					get = function(_) return RE.Settings.profile.DisplayHealers end
 				},
@@ -293,7 +282,7 @@ RE.AceConfig = {
 					desc = L["Map position is saved separately for each battleground."],
 					type = "select",
 					width = "double",
-					order = 6,
+					order = 5,
 					disabled = function(_) if select(2, IsInInstance()) == "pvp" then return true else return false end end,
 					values = {
 						[AB] = GetMapInfo(AB).name,
@@ -321,7 +310,7 @@ RE.AceConfig = {
 					desc = L["This option control map size."],
 					type = "range",
 					width = "double",
-					order = 7,
+					order = 6,
 					min = 0.5,
 					max = 1.5,
 					step = 0.05,
@@ -333,7 +322,7 @@ RE.AceConfig = {
 					desc = L["This option control map transparency."],
 					type = "range",
 					width = "double",
-					order = 8,
+					order = 7,
 					isPercent = true,
 					min = 0.1,
 					max = 1,
@@ -502,7 +491,7 @@ function RE:OnMouseWheel(delta)
 	newscale = RE:Round(newscale, 2)
 	REPorterFrameCore:SetScale(newscale)
 	if SettingsPanel:IsShown() then
-		RE.ConfigFrame.obj.children[1].children[1].children[7]:SetValue(newscale)
+		RE.ConfigFrame.obj.children[1].children[1].children[6]:SetValue(newscale)
 	end
 end
 
@@ -829,21 +818,14 @@ function RE:OnUpdate(elapsed)
 						texture = "Interface\\Addons\\REPorter\\Textures\\BlipDead"
 						r, g, b = r * 0.35, g * 0.35, b * 0.35
 					end
-					local raidMarker = GetRaidTargetIndex(unit)
 					if IsShiftKeyDown() and IsControlKeyDown() then
 						RE.IsOverlay = true
-						if raidMarker ~= nil then
-							texture = "Interface\\Addons\\REPorter\\Textures\\RaidMarker"..raidMarker
-							REPorterFrameCoreUP:AddUnit(unit, texture, 25, 25, 1, 1, 1, 1, 0, false)
-						elseif UnitGroupRolesAssigned(unit) == "HEALER" then
+						if UnitGroupRolesAssigned(unit) == "HEALER" then
 							REPorterFrameCoreUP:AddUnit(unit, texture.."Healer", 30, 30, r, g, b, 1, 0, false)
 						end
 					else
 						RE.IsOverlay = false
-						if RE.Settings.profile.DisplayMarks and raidMarker ~= nil then
-							texture = "Interface\\Addons\\REPorter\\Textures\\RaidMarker"..raidMarker
-							REPorterFrameCoreUP:AddUnit(unit, texture, 25, 25, 1, 1, 1, 1, 0, false)
-						elseif RE.Settings.profile.DisplayHealers and UnitGroupRolesAssigned(unit) == "HEALER" then
+						if RE.Settings.profile.DisplayHealers and UnitGroupRolesAssigned(unit) == "HEALER" then
 							REPorterFrameCoreUP:AddUnit(unit, texture.."Healer", 30, 30, r, g, b, 1, 0, false)
 						else
 							REPorterFrameCoreUP:AddUnit(unit, texture, 25, 25, r, g, b, 1, 0, false)
@@ -1089,7 +1071,7 @@ end
 function RE:Create()
 	REPorterFrameCore:SetScript("OnUpdate", nil)
 	REPorterFrameEstimator:ClearAllPoints()
-	REPorterFrameEstimator:SetPoint("TOP", UIWidgetTopCenterContainerFrame, "BOTTOM", 0, -10)
+	REPorterFrameEstimator:SetPoint("TOP", UIWidgetTopCenterContainerFrame, "BOTTOM", 0, -15)
 	RE.POINodes = {}
 
 	if RE.CurrentMap == SM or RE.CurrentMap == DR then
