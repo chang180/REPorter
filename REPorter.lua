@@ -61,6 +61,7 @@ local ASH = 1478
 local KR = 1537
 local DR = 2345
 local DD = 519
+local SR = 2397
 
 RE.POIIconSize = 30
 RE.POINumber = 40
@@ -120,7 +121,8 @@ RE.MapSettings = {
 	[BFW] = {["PlayerNumber"] = 40},
 	[CI] = {["PlayerNumber"] = 10},
 	[ASH] = {["PlayerNumber"] = 40},
-	[DR] = {["PlayerNumber"] = 10, ["WidgetID"] = 1687}
+	[DR] = {["PlayerNumber"] = 10, ["WidgetID"] = 1687},
+	[SR] = {["PlayerNumber"] = 40}
 }
 RE.POICaptureStatus = {
 	[4] = FACTION_ALLIANCE, -- Graveyard
@@ -145,6 +147,8 @@ RE.POICaptureStatus = {
 	[149] = FACTION_HORDE, -- Dock
 	[152] = FACTION_ALLIANCE, -- Oil
 	[154] = FACTION_HORDE, -- Oil
+	[174] = FACTION_HORDE, -- Bastion
+	[176] = FACTION_ALLIANCE, -- Bastion
 	[208] = FACTION_ALLIANCE, -- Market
 	[209] = FACTION_HORDE, -- Market
 	[213] = FACTION_ALLIANCE, -- Ruins
@@ -200,7 +204,29 @@ RE.AtlasNameToTextureIndex = {
 	["orbs-rightIcon1-state1"] = 45,
 	["orbs-rightIcon2-state1"] = 45,
 	["orbs-rightIcon3-state1"] = 45,
-	["orbs-rightIcon4-state1"] = 45
+	["orbs-rightIcon4-state1"] = 45,
+	["capPTs-bastion-alliance"] = 175,
+	["capPts-bastion-assaulted-alliance"] = 176,
+	["capPts-bastion-assaulted-horde"] = 174,
+	["capPts-bastion-horde"] = 173,
+	["capPts-bastion-neutural"] = 172,
+	["capPts-powerstation-alliance"] = 72,
+	["capPts-powerstation-horde"] = 68,
+	["capPts-powerstation-neutural"] = 65,
+	["capPTs-refinery-alliance"] = 151,
+	["capPts-refinery-assaulted-alliance"] = 152,
+	["capPts-refinery-assaulted-horde"] = 154,
+	["capPts-refinery-horde"] = 153,
+	["capPts-refinery-neutral"] = 150,
+	["capPTs-stadium-alliance"] = 215,
+	["capPts-stadium-assaulted-alliance"] = 218,
+	["capPts-stadium-assaulted-horde"] = 219,
+	["capPts-stadium-horde"] = 216,
+	["capPts-stadium-neutral"] = 217,
+	["capPTs-turret-alliance"] = 167,
+	["capPts-turret-horde"] = 168,
+	["capPts-turret-neutral"] = 169,
+	["capPts-voidpowerup-neutral"] = 194
 }
 RE.BFWWalls = {86, 87, 88, 89, 90, 91, 95, 96, 97, 98, 99, 100}
 
@@ -237,7 +263,8 @@ RE.DefaultConfig = {
 			[BFW] = {["wx"] = RE.ScreenHeight, ["wy"] = RE.ScreenWidth, ["ww"] = 500, ["wh"] = 320, ["mx"] = -3, ["my"] = -84, ["ms"] = 1},
 			[CI] = {["wx"] = RE.ScreenHeight, ["wy"] = RE.ScreenWidth, ["ww"] = 270, ["wh"] = 305, ["mx"] = -30, ["my"] = 55, ["ms"] = 1},
 			[ASH] = {["wx"] = RE.ScreenHeight, ["wy"] = RE.ScreenWidth, ["ww"] = 270, ["wh"] = 330, ["mx"] = 15, ["my"] = -40, ["ms"] = 1},
-			[DR] = {["wx"] = RE.ScreenHeight, ["wy"] = RE.ScreenWidth, ["ww"] = 270, ["wh"] = 330, ["mx"] = 15, ["my"] = -40, ["ms"] = 1}
+			[DR] = {["wx"] = RE.ScreenHeight, ["wy"] = RE.ScreenWidth, ["ww"] = 270, ["wh"] = 330, ["mx"] = 15, ["my"] = -40, ["ms"] = 1},
+			[SR] = {["wx"] = RE.ScreenHeight, ["wy"] = RE.ScreenWidth, ["ww"] = 605, ["wh"] = 430, ["mx"] = 15, ["my"] = -45, ["ms"] = 1}
 		}
 	}
 }
@@ -304,7 +331,8 @@ RE.AceConfig = {
 						[BFW] = GetMapInfo(BFW).name,
 						[CI] = GetMapInfo(CI).name,
 						[ASH] = GetMapInfo(ASH).name,
-						[DR] = GetMapInfo(DR).name
+						[DR] = GetMapInfo(DR).name,
+						[SR] = GetMapInfo(SR).name
 					},
 					set = function(_, val) RE.LastMap = val; RE:ShowDummyMap(val) end,
 					get = function(_) return RE.LastMap end
