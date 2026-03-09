@@ -60,6 +60,7 @@ local CI = 1335
 local ASH = 1478
 local KR = 1537
 local DR = 2345
+local DD = 519
 
 RE.POIIconSize = 30
 RE.POINumber = 40
@@ -113,6 +114,7 @@ RE.MapSettings = {
 	[TOK] = {["PlayerNumber"] = 10},
 	[SM] = {["PlayerNumber"] = 10, ["WidgetID"] = 1687},
 	[DG] = {["PlayerNumber"] = 15, ["WidgetID"] = 2074},
+	[DD] = {["PlayerNumber"] = 15},
 	[TMVS] = {["PlayerNumber"] = 40},
 	[SS] = {["PlayerNumber"] = 10, ["NodeTimer"] = 40},
 	[BFW] = {["PlayerNumber"] = 40},
@@ -229,6 +231,7 @@ RE.DefaultConfig = {
 			[TOK] = {["wx"] = RE.ScreenHeight, ["wy"] = RE.ScreenWidth, ["ww"] = 390, ["wh"] = 250, ["mx"] = 19, ["my"] = -21, ["ms"] = 1},
 			[SM] = {["wx"] = RE.ScreenHeight, ["wy"] = RE.ScreenWidth, ["ww"] = 460, ["wh"] = 350, ["mx"] = 7, ["my"] = -43, ["ms"] = 1},
 			[DG] = {["wx"] = RE.ScreenHeight, ["wy"] = RE.ScreenWidth, ["ww"] = 555, ["wh"] = 470, ["mx"] = -15, ["my"] = -35, ["ms"] = 1},
+			[DD] = {["wx"] = RE.ScreenHeight, ["wy"] = RE.ScreenWidth, ["ww"] = 555, ["wh"] = 460, ["mx"] = -15, ["my"] = -35, ["ms"] = 1},
 			[TMVS] = {["wx"] = RE.ScreenHeight, ["wy"] = RE.ScreenWidth, ["ww"] = 220, ["wh"] = 370, ["mx"] = -2, ["my"] = -22, ["ms"] = 1},
 			[SS] = {["wx"] = RE.ScreenHeight, ["wy"] = RE.ScreenWidth, ["ww"] = 360, ["wh"] = 385, ["mx"] = 66, ["my"] = -63, ["ms"] = 1},
 			[BFW] = {["wx"] = RE.ScreenHeight, ["wy"] = RE.ScreenWidth, ["ww"] = 500, ["wh"] = 320, ["mx"] = -3, ["my"] = -84, ["ms"] = 1},
@@ -295,6 +298,7 @@ RE.AceConfig = {
 						[SM] = GetMapInfo(SM).name,
 						[TOK] = GetMapInfo(TOK).name,
 						[DG] = GetMapInfo(DG).name,
+						[DD] = GetMapInfo(DG).name.." - Legacy/Brawl",
 						[TMVS] = GetMapInfo(TMVS).name,
 						[SS] = GetMapInfo(SS).name,
 						[BFW] = GetMapInfo(BFW).name,
@@ -1082,7 +1086,7 @@ function RE:Create()
 		RE.EstimatorData = {0, 0, 0, 0, -1}
 	end
 
-	if tContains({AV, BFG, IOC, AB, DG, SS, EOTS, BFW, CI, ASH, TOK}, RE.CurrentMap) then
+	if tContains({AV, BFG, IOC, AB, DG, SS, EOTS, BFW, CI, ASH, TOK, DD, SR}, RE.CurrentMap) then
 		RE.CareAboutNodes = true
 		if RE.CurrentMap == SS then
 			REPorterFrame:RegisterEvent("VIGNETTES_UPDATED")
@@ -1098,7 +1102,7 @@ function RE:Create()
 	else
 		RE.CareAboutPoints = false
 	end
-	if tContains({WG, TP, EOTS, TOK, CI, DR}, RE.CurrentMap) then
+	if tContains({WG, TP, EOTS, TOK, CI, DR, DD, SR}, RE.CurrentMap) then
 		RE.CareAboutFlags = true
 	else
 		RE.CareAboutFlags = false

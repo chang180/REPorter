@@ -47,6 +47,7 @@
         "assign-type-mismatch",
         "missing-fields",
         "param-type-mismatch",
-        "cast-local-type"
+        "cast-local-type",
+        "missing-parameter"
     ]
 }
