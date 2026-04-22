@@ -101,7 +101,7 @@ RE.BlinkPOIValue = 0.3
 RE.BlinkPOIUp = true
 
 RE.FoundNewVersion = false
-RE.AddonVersionCheck = 30100
+RE.AddonVersionCheck = 30101
 RE.ScreenHeight, RE.ScreenWidth = UIParent:GetCenter()
 
 RE.MapSettings = {
